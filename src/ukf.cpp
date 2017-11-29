@@ -103,14 +103,16 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   /*****************************************************************************
   *  Initialization
   ****************************************************************************/
+  // Save the current time stamp for next dt calculation
+  previous_timestamp_ = meas_package.timestamp_;
 
   // first measurement
-  x_ << 1, 1, 1, 1, 0.1;
+  x_ << 0.1, 0.1, 0.1, 0.1, 0.1;
 
   //state covariance matrix P
       // init covariance matrix
-  P_ << 1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0,
+  P_ << 0.15, 0, 0, 0, 0,
+        0, 0.15, 0, 0, 0,
         0,    0, 100, 0, 0,
         0,    0, 0, 100, 0,
         0,    0, 0, 0, 100;
@@ -147,8 +149,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
      // Print the initialization results
     cout << "UKF init: " << x_ << endl;
 
-    // Save the current time stamp for next dt calculation
-    previous_timestamp_ = meas_package.timestamp_;
+
 
     // done initializing, no need to predict or update
     is_initialized_ = true;
@@ -209,9 +210,10 @@ void UKF::Prediction(double delta_t) {
   MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
 
   //create augmented mean state
+  x_aug.fill(0.0);
   x_aug.head(5) = x_;
-  x_aug(5) = 0;
-  x_aug(6) = 0;
+  //x_aug(5) = 0;
+  //x_aug(6) = 0;
 
   cout << "x_aug: " << x_aug << endl;
 
