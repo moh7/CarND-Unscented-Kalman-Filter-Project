@@ -6,7 +6,6 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include "tools.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -33,7 +32,7 @@ public:
   MatrixXd Xsig_pred_;
 
   ///* time when the state is true, in us
-  long long time_us_;
+  double previous_timestamp_;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
   double std_a_;
@@ -66,13 +65,14 @@ public:
   int n_aug_;
 
   ///* Sigma point spreading parameter
-  double lambda_;
+  int lambda_;
 
   ///* the current NIS for radar
   double NIS_radar_;
 
   ///* the current NIS for laser
-  double NIS_laser_;
+  double NIS_lidar_;
+
 
   /**
    * Constructor
