@@ -31,7 +31,7 @@ UKF::UKF() {
   std_a_ = 2;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 0.4;
+  std_yawdd_ = 0.25;
 
   // Laser measurement noise standard deviation position1 in m
   std_laspx_ = 0.15;
@@ -109,16 +109,16 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
   //state covariance matrix P
       // init covariance matrix
-  P_ << 0.2, 0, 0, 0, 0,
-        0, 0.2, 0, 0, 0,
-        0,    0, 2, 0, 0,
-        0,    0, 0, 2, 0,
-        0,    0, 0, 0, 2;
+  P_ << 0.15, 0, 0, 0, 0,
+        0, 0.15, 0, 0, 0,
+        0,    0, 1, 0, 0,
+        0,    0, 0, 1, 0,
+        0,    0, 0, 0, 1;
 
   if (!is_initialized_) {
 
     // first measurement
-    if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+    if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
       /**Convert radar from polar to cartesian coordinates and initialize state.*/
 
         float rho = meas_package.raw_measurements_(0);
@@ -134,20 +134,14 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
         x_(0) = p_x;
         x_(1) = p_y;
-        x_(3) = v;
+        x_(2) = v;
     }
 
-    else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
+    else if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
 
         x_(0) = meas_package.raw_measurements_(0);
         x_(1) = meas_package.raw_measurements_(1);
     }
-
-    // Deal with the special case initialisation problems
-    if (fabs(x_(0)) < EPS and fabs(x_(1)) < EPS){
-		x_(0) = EPS;
-		x_(1) = EPS;
-	}
 
 
      // Print the initialization results
@@ -194,6 +188,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
  * measurement and this one.
  */
 void UKF::Prediction(double delta_t) {
+  cout << "Start Prediction ... "<< endl;
   /**
   TODO:
 
@@ -317,6 +312,8 @@ void UKF::Prediction(double delta_t) {
     P_ = P_ + weights_(i) * x_diff * x_diff.transpose() ;
   }
 
+  cout << "Prediction Done."<< endl;
+
 }
 
 
@@ -327,6 +324,8 @@ void UKF::Prediction(double delta_t) {
  * @param {MeasurementPackage} meas_package
  */
 void UKF::UpdateLidar(MeasurementPackage meas_package) {
+  cout << "Start Lidar Update ..."<< endl;
+
   /**
   TODO:
 
@@ -431,6 +430,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   x_ = x_ + K * z_diff;
   P_ = P_ - K * S * K.transpose();
 
+  cout << "Lidar Update Done."<< endl;
 
 }
 
@@ -439,6 +439,8 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
  * @param {MeasurementPackage} meas_package
  */
 void UKF::UpdateRadar(MeasurementPackage meas_package) {
+  cout << "Radar Update ..."<< endl;
+
   /**
   TODO:
 
@@ -545,6 +547,9 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;
   P_ = P_ - K * S * K.transpose();
+
+  cout << "Radar Update Done."<< endl;
+
 
 }
 
