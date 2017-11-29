@@ -111,7 +111,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
     previous_timestamp_ = meas_package.timestamp_;
 
     // init x
-    x_ << 0.1, 0.1, 0.1, 0.1, 0.1;
+    x_ << 0.1, 0.1, 0, 0, 0;
 
     //init state covariance matrix P
     P_ << 1, 0, 0, 0, 0,
