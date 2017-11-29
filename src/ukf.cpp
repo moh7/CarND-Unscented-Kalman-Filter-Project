@@ -272,7 +272,7 @@ void UKF::Prediction(double delta_t) {
     }
 
     double v_p = v;
-    double yaw_p = yaw + yawd*delta_t;
+    double yaw_p = yaw + yawd * delta_t;
     double yawd_p = yawd;
 
     //add noise
