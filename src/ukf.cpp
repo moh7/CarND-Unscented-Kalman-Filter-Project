@@ -86,100 +86,93 @@ UKF::~UKF() {}
 * either radar or laser.
 */
 void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
+  /**
+  TODO:
+  Complete this function! Make sure you switch between lidar and radar
+  measurements.
+  */
 
- // skip predict/update if sensor type is ignored
- if ((meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) ||
+  // skip predict/update if sensor type is ignored
+  if ((meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) ||
       (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_)) {
 
-  /*****************************************************************************
-  *  Initialization
-  ****************************************************************************/
+    /*****************************************************************************
+    *  Initialization
+    ****************************************************************************/
+    if (!is_initialized_) {
+      /**
+      TODO:
+      * Initialize the state x_ with the first measurement.
+      * Create the covariance matrix.
+      * Remember: you'll need to convert radar from polar to cartesian coordinates.
+      */
+      /**
+      Initialize state.
+      */
 
+      // first measurement
+      x_ << 1, 1, 1, 1, 0.1;
 
-  if (!is_initialized_) {
+      // init covariance matrix
+      P_ << 0.15,    0, 0, 0, 0,
+               0, 0.15, 0, 0, 0,
+               0,    0, 1, 0, 0,
+               0,    0, 0, 1, 0,
+               0,    0, 0, 0, 1;
 
-    // init time stamp
-    time_us_ = meas_package.timestamp_;
+      // init timestamp
+      time_us_ = meas_package.timestamp_;
 
-    // init x
-    x_ << 1, 1, 1, 1, 0.1;
-
-    //init state covariance matrix P
-    P_ << 0.15, 0, 0, 0, 0,
-          0, 0.15, 0, 0, 0,
-          0,    0, 1, 0, 0,
-          0,    0, 0, 1, 0,
-          0,    0, 0, 0, 1;
-
-    // first measurement
-    if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
-      /**Convert radar from polar to cartesian coordinates and initialize state.*/
-
-        float rho = meas_package.raw_measurements_(0);
-        float phi = meas_package.raw_measurements_(1);
-        float rho_dot = meas_package.raw_measurements_(2);
-
-        // Coordinates convertion from polar to cartesian
-        float p_x = rho * cos(phi);
-        float p_y = rho * sin(phi);
-        float v_x = rho_dot * cos(phi);
-        float v_y = rho_dot * sin(phi);
-        float v = sqrt(v_x*v_x + v_y*v_y);
-
-        x_(0) = p_x;
-        x_(1) = p_y;
-        x_(2) = v;
-    }
-
-    else if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
+      if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
 
         x_(0) = meas_package.raw_measurements_(0);
         x_(1) = meas_package.raw_measurements_(1);
+
+      }
+      else if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
+        /**
+        Convert radar from polar to cartesian coordinates and initialize state.
+        */
+        float ro = meas_package.raw_measurements_(0);
+        float phi = meas_package.raw_measurements_(1);
+        float ro_dot = meas_package.raw_measurements_(2);
+        x_(0) = ro     * cos(phi);
+        x_(1) = ro     * sin(phi);
+      }
+
+      // done initializing, no need to predict or update
+      is_initialized_ = true;
+
+      return;
     }
 
+    /*****************************************************************************
+    *  Prediction
+    ****************************************************************************/
+    //compute the time elapsed between the current and previous measurements
+    float dt = (meas_package.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
+    time_us_ = meas_package.timestamp_;
 
-     // Print the initialization results
-    //cout << "UKF init: " << x_ << endl;
+    Prediction(dt);
 
+    /*****************************************************************************
+    *  Update
+    ****************************************************************************/
 
-
-    // done initializing, no need to predict or update
-    is_initialized_ = true;
-
-    return;
-  }
-
-  /*****************************************************************************
-  *  Prediction
-  ****************************************************************************/
-
-  //compute the time elapsed between the current and previous measurements
-  double dt = (meas_package.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
-  time_us_ = meas_package.timestamp_;
-
-  Prediction(dt);
-
-
-
-  /*****************************************************************************
-  *  Update
-  ****************************************************************************/
-
-
-  if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
+    if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
       UpdateLidar(meas_package);
-  }
+    }
     else if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
       UpdateRadar(meas_package);
+    }
   }
- }
 }
 
 /**
- * Predicts sigma points, the state, and the state covariance matrix.
- * @param {double} delta_t the change in time (in seconds) between the last
- * measurement and this one.
- */
+* Predicts sigma points, the state, and the state covariance matrix.
+* @param {double} delta_t the change in time (in seconds) between the last
+* measurement and this one.
+*/
 void UKF::Prediction(double delta_t) {
   //cout << "Start Prediction ... "<< endl;
   /**
