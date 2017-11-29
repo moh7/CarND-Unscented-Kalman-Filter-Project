@@ -65,10 +65,10 @@ UKF::UKF() {
   previous_timestamp_ = 0.0;
 
     //set state dimension
-  int n_x_ = 5;
+  n_x_ = 5;
 
   //set augmented dimension
-  int n_aug_ = 7;
+  n_aug_ = 7;
 
   // predicted sigma points matrix
   Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
@@ -77,7 +77,7 @@ UKF::UKF() {
   weights_ = VectorXd(2 * n_aug_ + 1);
 
     //define spreading parameter
-  double lambda_ = 3 - n_aug_;
+  lambda_ = 3 - n_aug_;
 
     // the current NIS for radar
   NIS_radar_ = 0.0;
@@ -162,7 +162,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   ****************************************************************************/
 
   //compute the time elapsed between the current and previous measurements
-  float dt = (meas_package.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
+  double dt = (meas_package.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
   previous_timestamp_ = meas_package.timestamp_;
 
   Prediction(dt);
