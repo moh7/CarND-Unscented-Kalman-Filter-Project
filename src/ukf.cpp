@@ -103,21 +103,22 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   /*****************************************************************************
   *  Initialization
   ****************************************************************************/
-  // Save the current time stamp for next dt calculation
-  previous_timestamp_ = meas_package.timestamp_;
 
-  // first measurement
-  x_ << 0.1, 0.1, 0.1, 0.1, 0.1;
 
-  //state covariance matrix P
-      // init covariance matrix
-  P_ << 0.15, 0, 0, 0, 0,
+  if (!is_initialized_) {
+
+    // init time stamp
+    previous_timestamp_ = meas_package.timestamp_;
+
+    // init x
+    x_ << 0.1, 0.1, 0.1, 0.1, 0.1;
+
+    //init state covariance matrix P
+    P_ << 0.15, 0, 0, 0, 0,
         0, 0.15, 0, 0, 0,
         0,    0, 100, 0, 0,
         0,    0, 0, 100, 0,
         0,    0, 0, 0, 100;
-
-  if (!is_initialized_) {
 
     // first measurement
     if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
