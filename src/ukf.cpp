@@ -1,4 +1,5 @@
 #include "ukf.h"
+#include "tools.h"
 #include "Eigen/Dense"
 #include <iostream>
 
@@ -7,14 +8,10 @@ using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using std::vector;
 
-#define EPS 0.0001
-
 /**
- * Initializes Unscented Kalman filter
- * This is scaffolding, do not modify
- */
+* Initializes Unscented Kalman filter
+*/
 UKF::UKF() {
-
   // if this is false, laser measurements will be ignored (except during init)
   use_laser_ = true;
 
@@ -48,13 +45,9 @@ UKF::UKF() {
   // Radar measurement noise standard deviation radius change in m/s
   std_radrd_ = 0.3;
 
-  // Parameters above this line are scaffolding, do not modify
-
   /**
   TODO:
-
   Complete the initialization. See ukf.h for other member properties.
-
   Hint: one or more values initialized above might be wildly off...
   */
 
@@ -62,13 +55,16 @@ UKF::UKF() {
   is_initialized_ = false;
 
   // time when the state is true, in us
-  previous_timestamp_ = 0.0;
+  time_us_ = 0.0;
 
-    //set state dimension
+  // state dimension
   n_x_ = 5;
 
-  //set augmented dimension
+  // Augmented state dimension
   n_aug_ = 7;
+
+  // Sigma point spreading parameter
+  lambda_ = 3 - n_x_;
 
   // predicted sigma points matrix
   Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
@@ -76,24 +72,19 @@ UKF::UKF() {
   //create vector for weights
   weights_ = VectorXd(2 * n_aug_ + 1);
 
-    //define spreading parameter
-  lambda_ = 3 - n_x_;
-
-    // the current NIS for radar
+  // the current NIS for radar
   NIS_radar_ = 0.0;
 
   // the current NIS for laser
-  NIS_lidar_ = 0.0;
-
-
+  NIS_laser_ = 0.0;
 }
 
 UKF::~UKF() {}
 
 /**
- * @param {MeasurementPackage} meas_package The latest measurement data of
- * either radar or laser.
- */
+* @param {MeasurementPackage} meas_package The latest measurement data of
+* either radar or laser.
+*/
 void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
  // skip predict/update if sensor type is ignored
@@ -108,7 +99,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   if (!is_initialized_) {
 
     // init time stamp
-    previous_timestamp_ = meas_package.timestamp_;
+    time_us_ = meas_package.timestamp_;
 
     // init x
     x_ << 1, 1, 1, 1, 0.1;
@@ -163,8 +154,8 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   ****************************************************************************/
 
   //compute the time elapsed between the current and previous measurements
-  double dt = (meas_package.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
-  previous_timestamp_ = meas_package.timestamp_;
+  double dt = (meas_package.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
+  time_us_ = meas_package.timestamp_;
 
   Prediction(dt);
 
@@ -422,7 +413,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 
 
   //calculate NIS
-  NIS_lidar_ = z_diff.transpose() * S.inverse() * z_diff;
+  NIS_laser_ = z_diff.transpose() * S.inverse() * z_diff;
 
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;

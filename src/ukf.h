@@ -32,7 +32,7 @@ public:
   MatrixXd Xsig_pred_;
 
   ///* time when the state is true, in us
-  double previous_timestamp_;
+  long long time_us_;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
   double std_a_;
@@ -71,7 +71,7 @@ public:
   double NIS_radar_;
 
   ///* the current NIS for laser
-  double NIS_lidar_;
+  double NIS_laser_;
 
 
   /**
