@@ -230,6 +230,8 @@ void UKF::Prediction(double delta_t) {
     Xsig_aug.col(i + 1 + n_aug_) = x_aug - sqrt(lambda_ + n_aug_) * L.col(i);
   }
 
+  cout << "Sigma points generated. "<< endl;
+
   /*****************************************************************************
   *  Sigma Points Prediction
   ****************************************************************************/
@@ -280,6 +282,7 @@ void UKF::Prediction(double delta_t) {
   }
 
 
+  cout << "Sigma points predicted. "<< endl;
 
   /*******************************************************************
   *  Calculate the Mean and Covariance from the Predicted Sigma Points
