@@ -3,7 +3,7 @@ Self-Driving Car Engineer Nanodegree Program
 
 In this project we will utilize an unscented kalman filter to estimate the state of a moving object of interest with noisy lidar and radar measurements. Passing the project requires obtaining RMSE values that are lower that the tolerance outlined in the project rubric. 
 
-This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/CarND-Unscented-Kalman-Filter-Project)
+This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/CarND-Unscented-Kalman-Filter-Project).
 
 This repository includes two files that can be used to set up and install [uWebSocketIO](https://github.com/uWebSockets/uWebSockets) for either Linux or Mac systems. For windows you can use either Docker, VMware, or even [Windows 10 Bash on Ubuntu](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/) to install uWebSocketIO. Please see [this concept in the classroom](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/16cf4a78-4fc7-49e1-8621-3450ca938b77) for the required version and installation scripts.
 
@@ -66,7 +66,8 @@ Dataset 2 : RMSE <= [0.0703, 0.0702, 0.6205, 0.2768]
 
 which meet the project accuracy requirements.
 
-In comparison, the RMSE values for the Extended Kalman Filter [here](https://github.com/moh7/CarND-Extended-Kalman-Filter-Project) were:
+
+In comparison, the RMSE values for the [Extended Kalman Filter](https://github.com/moh7/CarND-Extended-Kalman-Filter-Project) were:
 
 Dataset 1 : RMSE <= [0.0954, 0.0837, 0.4499, 0.4357]
 
