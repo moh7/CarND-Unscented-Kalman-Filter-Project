@@ -52,15 +52,24 @@ OUTPUT: values provided by the c++ program to the simulator
   
 ## Results
 
-![](both.png) 
+![](RMSE_both.png) 
 
 ### Accuracy
-px, py, vx, vy output coordinates must have an RMSE <= [0.11, 0.11, 0.52, 0.52] when using the file: "obj_pose-laser-radar-synthetic-input.txt which is the same data file the simulator uses for Dataset 1".
 
-The EKF accuracy was:
+For the new data set, your algorithm will be run against "obj_pose-laser-radar-synthetic-input.txt". The prgram will collect the positions that the UKF algorithm outputs and compares them to ground truth data. The px, py, vx, and vy RMSE should be less than or equal to the values [.09, .10, .40, .30] to pass this project.
+
+The RMSE values obtained by using the UKF algorithm ware:
+
+Dataset 1 : RMSE <= [0.0691, 0.0826, 0.3375, 0.2195]
+
+Dataset 2 : RMSE <= [0.0703, 0.0702, 0.6205, 0.2768]
+
+which meet the project accuracy requirements.
+
+In comparison, the RMSE values for the Extended Kalman Filter [here](https://github.com/moh7/CarND-Extended-Kalman-Filter-Project) were:
 
 Dataset 1 : RMSE <= [0.0954, 0.0837, 0.4499, 0.4357]
 
 Dataset 2 : RMSE <= [0.0744, 0.0959, 0.4588, 0.4947]
 
-which meet the project accuracy requirements.
+which are higher than the values obtained by UKF.
